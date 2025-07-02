@@ -40,8 +40,35 @@ public class ParseSQL
     }
 
     public void addNewRecord(Eventlist eventlist) throws SQLException {
-        //Сюда добавляем доступ через инъекции
-        
+        //Сюда добавляем доступ через защиту от инъекций
+        String createTableSQL = "CREATE TABLE IF NOT EXISTS eventslist ("
+                + "id VARCHAR(255) PRIMARY KEY, "
+                + "event_name VARCHAR(255), "
+                + "event_type VARCHAR(255), "
+                + "date_start DATE, "
+                + "date_end DATE, "
+                + "manager VARCHAR(255), "
+                + "place VARCHAR(255))";
+
+        //try (Statement stmt = connection.createStatement()) {
+            this.statement.execute(createTableSQL);
+        //}
+        String insertSQL = "INSERT INTO eventslist (event_name, event_type, date_start, date_end, manager, place, id) "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?)";
+        Connection connection = DriverManager.getConnection(connectionUrl, userName, password);
+        try (PreparedStatement pstmt = connection.prepareStatement(insertSQL)) {
+            pstmt.setString(1, eventlist.event_name);
+            pstmt.setString(2, eventlist.event_type);
+            pstmt.setDate(3, java.sql.Date.valueOf(eventlist.date_start));
+            pstmt.setDate(4, java.sql.Date.valueOf(eventlist.date_start));;
+            pstmt.setString(5, eventlist.manager);
+            pstmt.setString(6, eventlist.place);
+            pstmt.setString(7, String.valueOf(eventlist.id));
+
+            pstmt.executeUpdate();
+        }
+
+
         statement.executeUpdate("INSERT INTO eventslist.eventslist (event_name, event_type, date_start, date_end, manager , place, id)" +
                 " VALUES ('" + eventlist.event_name + "','" + eventlist.event_type + "', '" + eventlist.date_start + "', '" + eventlist.date_end + "', " +
                 "'" + eventlist.manager + "','" + eventlist.place + "','" + eventlist.id +"')");
