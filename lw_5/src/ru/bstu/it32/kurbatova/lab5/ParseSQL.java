@@ -8,6 +8,7 @@ public class ParseSQL
     private  String password ;
     private  Statement statement;
     private  PreparedStatement ptsm;
+    private Connection connection;
     public ParseSQL()
     {
 
@@ -17,7 +18,7 @@ public class ParseSQL
             this.connectionUrl = settings[0];
             this.userName = settings[1];
             this.password = settings[2];
-            Connection connection = DriverManager.getConnection(connectionUrl, userName, password);
+            this.connection = DriverManager.getConnection(connectionUrl, userName, password);
             System.out.println("Подключение прошло успешно!");
             this.statement = (Statement) connection.createStatement();
         } catch (Exception e) {
@@ -55,8 +56,8 @@ public class ParseSQL
         //}
         String insertSQL = "INSERT INTO eventslist (event_name, event_type, date_start, date_end, manager, place, id) "
                 + "VALUES (?, ?, ?, ?, ?, ?, ?)";
-        Connection connection = DriverManager.getConnection(connectionUrl, userName, password);
-        try (PreparedStatement pstmt = connection.prepareStatement(insertSQL)) {
+        //Connection connection = DriverManager.getConnection(connectionUrl, userName, password);
+        try (PreparedStatement pstmt = this.connection .prepareStatement(insertSQL)) {
             pstmt.setString(1, eventlist.event_name);
             pstmt.setString(2, eventlist.event_type);
             pstmt.setDate(3, java.sql.Date.valueOf(eventlist.date_start));
