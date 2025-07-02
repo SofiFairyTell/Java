@@ -40,8 +40,7 @@ public class ParseSQL
                 "'" + strings[4] + "','" + strings[5] + "')");
     }
 
-    public void addNewRecord(Eventlist eventlist) throws SQLException {
-        //Сюда добавляем доступ через защиту от инъекций
+    public void CreateTableSQL() throws SQLException{
         String createTableSQL = "CREATE TABLE IF NOT EXISTS eventslist ("
                 + "id VARCHAR(255) PRIMARY KEY, "
                 + "event_name VARCHAR(255), "
@@ -50,13 +49,13 @@ public class ParseSQL
                 + "date_end DATE, "
                 + "manager VARCHAR(255), "
                 + "place VARCHAR(255))";
-
-        //try (Statement stmt = connection.createStatement()) {
-            this.statement.execute(createTableSQL);
-        //}
+        this.statement.execute(createTableSQL);
+    }
+    public void addNewRecord(Eventlist eventlist) throws SQLException {
+        //Сюда добавляем доступ через защиту от инъекций
         String insertSQL = "INSERT INTO eventslist (event_name, event_type, date_start, date_end, manager, place, id) "
                 + "VALUES (?, ?, ?, ?, ?, ?, ?)";
-        //Connection connection = DriverManager.getConnection(connectionUrl, userName, password);
+
         try (PreparedStatement pstmt = this.connection .prepareStatement(insertSQL)) {
             pstmt.setString(1, eventlist.event_name);
             pstmt.setString(2, eventlist.event_type);
@@ -65,27 +64,37 @@ public class ParseSQL
             pstmt.setString(5, eventlist.manager);
             pstmt.setString(6, eventlist.place);
             pstmt.setString(7, String.valueOf(eventlist.id));
+            pstmt.executeUpdate();
+        }
+    }
+
+    public void updateRecord(int id) throws SQLException {
+        SetData setData = new SetData();
+        var strings = setData.setData();
+        String updateSQL = "UPDATE eventslist SET " +
+                "event_name = ?, " +
+                "event_type = ?, " +
+                "date_start = ?, " +
+                "date_end = ?, " +
+                "manager = ?, " +
+                "place = ? " +
+                "WHERE id = ?";
+        try (PreparedStatement pstmt = this.connection .prepareStatement(updateSQL)) {
+
+            // Устанавливаем параметры
+            pstmt.setString(1, strings[0]); // event_name
+            pstmt.setString(2, strings[1]); // event_type
+            pstmt.setString(3, strings[2]); // date_start как строка, если формат даты правильный
+            pstmt.setString(4, strings[3]); // date_end как строка
+            pstmt.setString(5, strings[4]); // manager
+            pstmt.setString(6, strings[5]); // place
+            pstmt.setString(7, String.valueOf(id));         // id
 
             pstmt.executeUpdate();
         }
 
-
-        statement.executeUpdate("INSERT INTO eventslist.eventslist (event_name, event_type, date_start, date_end, manager , place, id)" +
-                " VALUES ('" + eventlist.event_name + "','" + eventlist.event_type + "', '" + eventlist.date_start + "', '" + eventlist.date_end + "', " +
-                "'" + eventlist.manager + "','" + eventlist.place + "','" + eventlist.id +"')");
-
-    }
-
-//    public void addNewRecord(lace + "') where id <>("+eventlist.id+")");
-////    }Eventlist eventlist) throws SQLException {
-//        statement.executeUpdate("INSERT INTO eventslist.eventslist (event_name, event_type, date_start, date_end, manager , place)" +
-//                " VALUES ('" + eventlist.event_name + "','" + eventlist.event_type + "', '" + eventlist.date_start + "', '" + eventlist.date_end + "', " +
-//                "'" + eventlist.manager + "','" + eventlist.p
-    public void updateRecord(int id) throws SQLException {
-        SetData setData = new SetData();
-        var strings = setData.setData();
-        statement.executeUpdate("update eventslist.eventslist set event_name = '" + strings[0] + "', event_type = '" + strings[1] + "', date_start = '" + strings[2]
-                + "', date_end = '" + strings[3] + "', manager = '" + strings[4] + "', place = '" + strings[5] + "' where id = " + id + ";");
+//        statement.executeUpdate("update eventslist.eventslist set event_name = '" + strings[0] + "', event_type = '" + strings[1] + "', date_start = '" + strings[2]
+//                + "', date_end = '" + strings[3] + "', manager = '" + strings[4] + "', place = '" + strings[5] + "' where id = " + id + ";");
     }
     public void updateRecord(int id, Eventlist eventlist) throws SQLException {
         statement.executeUpdate("update eventslist.eventslist set event_name = '" + eventlist.event_name + "', event_type = '" + eventlist.event_type
@@ -93,7 +102,15 @@ public class ParseSQL
                 "', place = '" + eventlist.place  + "' where id = " + id + ";");
     }
     public void deleteRecord(int id) throws SQLException {
-        statement.executeUpdate("delete from eventslist.eventslist where id in(" + id + ");");
+        String updateSQL = "DELETE FROM eventslist " +
+                "WHERE id = ?";
+        try (PreparedStatement pstmt = this.connection .prepareStatement(updateSQL)) {
+            // Устанавливаем параметры
+            pstmt.setString(1, String.valueOf(id));         // id
+            pstmt.executeUpdate();
+        }
+
+        //statement.executeUpdate("delete from eventslist.eventslist where id in(" + id + ");");
     }
 
     public ResultSet workDataBase(int action) {
