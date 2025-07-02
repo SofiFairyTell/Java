@@ -6,9 +6,10 @@ import java.util.Properties;
 
 public class ParseProperties
 {
-    private String propPath = "C:\\Users\\Kurbatova\\source\\LW2021\\JAVA\\lw_5\\settings.properties";
+    private final String propPath = "D:\\Private\\Java\\Java\\lw_5\\settings.properties";
 
     public String readCatalogRoot () {
+
         Properties prop = new Properties();
         try {
             FileInputStream fis = new FileInputStream(propPath);

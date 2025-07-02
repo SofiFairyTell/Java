@@ -7,7 +7,7 @@ public class ParseSQL
     private  String userName ;
     private  String password ;
     private  Statement statement;
-
+    private  PreparedStatement ptsm;
     public ParseSQL()
     {
 
@@ -40,9 +40,12 @@ public class ParseSQL
     }
 
     public void addNewRecord(Eventlist eventlist) throws SQLException {
+        //Сюда добавляем доступ через инъекции
+        
         statement.executeUpdate("INSERT INTO eventslist.eventslist (event_name, event_type, date_start, date_end, manager , place, id)" +
                 " VALUES ('" + eventlist.event_name + "','" + eventlist.event_type + "', '" + eventlist.date_start + "', '" + eventlist.date_end + "', " +
                 "'" + eventlist.manager + "','" + eventlist.place + "','" + eventlist.id +"')");
+
     }
 
 //    public void addNewRecord(lace + "') where id <>("+eventlist.id+")");
