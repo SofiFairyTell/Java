@@ -30,7 +30,10 @@ public class ParseSAX
     {
         String tag = "";
         String id = "";
-
+        /** 
+         * Метод вызывается, когда SAXParser начинает 
+         * обработку тэга
+         */
         @Override
         public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException
         {
@@ -38,6 +41,10 @@ public class ParseSAX
             if (tag.equalsIgnoreCase("Eventlist"))
                 id = attributes.getValue("id");
         }
+         /** 
+         * Метод вызывается, когда SAXParser считывает 
+         * текст между тэгами
+         */
         @Override
         public void characters(char ch[], int start, int length) throws SAXException {
             if (tag.equalsIgnoreCase("event_name")) {
